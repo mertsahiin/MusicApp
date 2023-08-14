@@ -1,13 +1,39 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View,SafeAreaView , FlatList} from 'react-native';
+import music_data from './music-data.json'
+import SongCard from './src/SongCards'
+import SearchBar from './src/SearchBar'
+
+
 
 export default function App() {
+  const [list , setList] = useState(music_data)
+  const renderSong = ({item}) => <SongCard song = {item} />
+  const renderSeperator = () => <View style = {styles.seperator} />
+  const handleSearch = text => {
+    const filteredList = music_data.filter(song =>{
+       const searchedText = text.toLowerCase();
+        const currenTitle = song.title.toLowerCase();
+
+        return currenTitle.indexOf(searchedText) > -1;
+      }
+      );
+      setList(filteredList);
+  };
+
   return (
+    <SafeAreaView style = {styles.container}>
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <SearchBar onSearch = {handleSearch} />
+      <FlatList
+       data={list} renderItem={renderSong} 
+       keyExtractor={item => item.id}
+       ItemSeparatorComponent={renderSeperator}
+       />
       <StatusBar style="auto" />
     </View>
+    </SafeAreaView>
   );
 }
 
@@ -15,7 +41,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 12
   },
+  seperator : {
+    borderWidth : 1,
+    borderColor : '#e0e0e0'
+  }
 });
